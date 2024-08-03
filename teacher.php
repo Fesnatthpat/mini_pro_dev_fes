@@ -1,3 +1,14 @@
+<?php 
+
+session_start();
+require_once 'config/db.php';
+
+if (!isset($_SESSION['admin_login'])) {
+    $_SESSION['error'] = 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+    header("location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="th">
 
@@ -25,11 +36,7 @@
                     <div class="form-group">
                         <label for="search-level">กลุ่มวิชาที่สอน</label>
                         <select id="search-level" name="search-level">
-                            <option value="">เลือกกลุ่มวิชา</option>
-                            <option value="1">คณิตศาสตร์</option>
-                            <option value="2">วิทยาศาสตร์</option>
-                            <option value="3">ภาษา</option>
-                            <option value="3">สังคมศาสตร์</option>
+                            
                         </select>
                     </div>
                     <div class="form-group">

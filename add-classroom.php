@@ -15,14 +15,14 @@
             <div class="box2">
                 <h1 class="text-teacher">ข้อมูลห้องเรียน</h1>
                 <hr>
-                <div>
+                <form>
                     <div class="form-group">
                         <label for="student-id">หมายเลขห้อง</label>
-                        <input type="text" id="student-id" name="student-id">
+                        <input type="text" name="room_no">
                     </div>
                     <div class="form-group">
                         <label for="name">อาคารเรียน</label>
-                        <select id="level" name="level">
+                        <select name="floot">
                             <option value="">เลือกอาคารเรียน</option>
                             <option value="A">A</option>
                             <option value="B">B</option>
@@ -50,7 +50,7 @@
                             <button onclick="window.location.href='data-classroom.php'">ออก</button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

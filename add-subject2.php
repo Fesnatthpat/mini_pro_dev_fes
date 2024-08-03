@@ -1,3 +1,27 @@
+<?php
+session_start();
+require_once 'config/db.php';
+
+if (!isset($_SESSION['admin_login'])) {
+    $_SESSION['error'] = 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+    header("location: index.php");
+    exit;
+}
+
+try {
+    $stmt = $pdo->prepare("SELECT subj_group_name FROM subject_group");
+    $stmt->execute();
+    $subjectGroups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="th">
 
@@ -15,47 +39,72 @@
             <div class="box2">
                 <h1 class="text-teacher">ข้อมูลรายวิชา</h1>
                 <hr>
-                <div>
+                <form action="add_data_subject2_db.php" method="POST" enctype="multipart/form-data">
+                    <?php if (isset($_SESSION['error'])) { ?>
+                        <div class="alert-danger">
+                            <?php
+                            echo $_SESSION['error'];
+                            unset($_SESSION['error']);
+                            ?>
+                        </div>
+                    <?php } ?>
+                    <?php if (isset($_SESSION['success'])) { ?>
+                        <div class="alert-success">
+                            <?php
+                            echo $_SESSION['success'];
+                            unset($_SESSION['success']);
+                            ?>
+                        </div>
+                    <?php } ?>
+                    <?php if (isset($_SESSION['warning'])) { ?>
+                        <div class="alert-warning">
+                            <?php
+                            echo $_SESSION['warning'];
+                            unset($_SESSION['warning']);
+                            ?>
+                        </div>
+                    <?php } ?>
                     <div class="form-group">
                         <label for="student-id">รหัสวิชา</label>
-                        <input type="text" id="student-id" name="student-id">
+                        <input type="text" id="subject_code" name="subject_code">
                     </div>
                     <div class="form-group">
                         <label for="name">ชื่อวิชา</label>
-                        <input type="text" id="name" name="name">
+                        <input type="text" id="subject_name" name="subject_name">
                     </div>
                     <div class="form-group">
-                    <label for="level">ระดับชั้น</label>
+                        <label for="level">ระดับชั้น</label>
                         <select id="level" name="level">
                             <option value="">เลือกระดับชั้น</option>
-                            <option value="1">ม.1</option>
-                            <option value="2">ม.2</option>
-                            <option value="3">ม.3</option>
+                            <option value="ม.1">ม.1</option>
+                            <option value="ม.2">ม.2</option>
+                            <option value="ม.3">ม.3</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="level">กลุ่มวิชา</label>
-                        <select id="level" name="level">
+                        <label for="subject_group">กลุ่มวิชา</label>
+                        <select id="subject_group" name="subject_group">
                             <option value="">เลือกกลุ่มวิชา</option>
-                            <option value="คณิตศาสตร์">คณิตศาสตร์</option>
-                            <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
-                            <option value="ภาษา">ภาษา</option>
-                            <option value="สังคมศาสตร์">สังคมศาสตร์</option>
+                            <?php foreach ($subjectGroups as $group) { ?>
+                                <option value="<?php echo htmlspecialchars($group['subj_group_name']); ?>">
+                                    <?php echo htmlspecialchars($group['subj_group_name']); ?>
+                                </option>
+                            <?php } ?>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="photo">ปกหนังสือ</label>
-                        <input type="file" id="photo" name="photo">
+                        <input type="file" name="photo" accept="image/gif, image/jpeg, image/png">
                     </div>
                     <div class="btn-con">
                         <div class="btn-submit">
-                            <button  type="submit">บันทึกข้อมูล</button>
+                            <button type="submit" name="add_subject2">บันทึกข้อมูล</button>
                         </div>
                         <div class="btn-out">
                             <button onclick="window.location.href='data-subject2.php'">ออก</button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

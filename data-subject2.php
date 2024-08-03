@@ -1,3 +1,22 @@
+<?php
+session_start();
+require_once 'config/db.php';
+
+// try {
+//     $stmt = $pdo->prepare("SELECT * FROM building");
+//     $stmt->execute();
+//     $buildings = $stmt->fetchAll(PDO::FETCH_ASSOC); // เปลี่ยนชื่อตัวแปรเป็น $buildings
+// } catch (PDOException $e) {
+//     echo "Error: " . $e->getMessage();
+// }
+
+if (!isset($_SESSION['admin_login'])) {
+    $_SESSION['error'] = 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+    header("location: index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="th">
 

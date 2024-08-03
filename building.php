@@ -1,49 +1,80 @@
+<?php
+session_start();
+require_once 'config/db.php';
+
+try {
+    $stmt = $pdo->prepare("SELECT * FROM building");
+    $stmt->execute();
+    $buildings = $stmt->fetchAll(PDO::FETCH_ASSOC); // เปลี่ยนชื่อตัวแปรเป็น $buildings
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+if (!isset($_SESSION['admin_login'])) {
+    $_SESSION['error'] = 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+    header("location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลกลุ่มวิชา</title>
-    <link rel="stylesheet" href="building.css">
+    <title>ข้อมูลอาคารเรียน</title>
+    <link rel="stylesheet" href="data-subject.css">
 </head>
+
 <body>
 
-<div class="container">
-    <h1>ข้อมูลอาคารเรียน</h1>
-    
-    <div class="form-group">
-        <label for="subject-group">ชื่ออาคารเรียน</label>
-        <input type="text" id="subject-group" name="subject-group">
-        <button type="button">บันทึกข้อมูล</button>
+    <div class="container">
+        <h1>ข้อมูลอาคารเรียน</h1>
+
+        <form action="add_data_building_db.php" method="POST" class="form-group">
+            <label for="name_building">ชื่ออาคารเรียน</label>
+            <input type="text" name="name_building">
+            <button type="submit" name="add_building">บันทึกข้อมูล</button>
+        </form>
+
+        <?php if (isset($_SESSION['error'])) { ?>
+            <div class="alert-danger">
+                <?php
+                echo $_SESSION['error'];
+                unset($_SESSION['error']);
+                ?>
+            </div>
+        <?php } ?>
+        <?php if (isset($_SESSION['success'])) { ?>
+            <div class="alert-success">
+                <?php
+                echo $_SESSION['success'];
+                unset($_SESSION['success']);
+                ?>
+            </div>
+        <?php } ?>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>อาคารเรียน</th>
+                    <th>การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($buildings as $building) { // เปลี่ยนเป็น $buildings ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($building['building_name']); // ใช้ building_name ?></td>
+                        <td>
+                            <a href="#">Edit</a> | 
+                            <a href="#">Delete</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
     </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>กลุ่มวิชา</th>
-                <th>การจัดการ</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>A</td>
-                <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
-            </tr>
-            <tr>
-                <td>B</td>
-                <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
-            </tr>
-            <tr>
-                <td>C</td>
-                <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
-            </tr>
-            <tr>
-                <td>D</td>
-                <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
 
 </body>
+
 </html>

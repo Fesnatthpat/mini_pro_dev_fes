@@ -11,8 +11,11 @@ try {
     echo "Error: " . $e->getMessage();
 }
 
-
-
+if (!isset($_SESSION['admin_login'])) {
+    $_SESSION['error'] = 'คุณไม่มีสิทธิ์เข้าถึงหน้านี้';
+    header("location: index.php");
+    exit();
+}
 
 ?>
 
@@ -74,6 +77,7 @@ try {
                     <div class="form-group">
                         <label for="subject_group">กลุ่มวิชาที่สอน</label>
                         <select id="subject_group" name="subject_group">
+                            <option value="">เลือกกลุ่มวิชา</option>
                             <?php foreach ($subjectGroups as $group) { ?>
                                 <option value="<?php echo htmlspecialchars($group['subj_group_name']); ?>">
                                     <?php echo htmlspecialchars($group['subj_group_name']); ?>
@@ -99,7 +103,7 @@ try {
                             <button type="submit" name="signupteacher">บันทึกข้อมูล</button>
                         </div>
                         <div class="btn-out">
-                            <button href="teacher.php">ออก</button>
+                            <button onclick="window.location.href='add-teacher.php'">ออก</button>
                         </div>
                     </div>
                 </form>
