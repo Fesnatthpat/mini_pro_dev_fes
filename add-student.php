@@ -24,8 +24,8 @@ require_once 'config/db.php';
             <div class="box2">
                 <h1 class="text-teacher">ข้อมูลนักเรียน</h1>
                 <hr>
-                <form action="sign_up_student_db.php" method="post">
-                <?php if (isset($_SESSION['error'])) { ?>
+                <form action="sign_up_student_db.php" method="post" enctype="multipart/form-data">
+                    <?php if (isset($_SESSION['error'])) { ?>
                         <div class="alert-danger">
                             <?php
                             echo $_SESSION['error'];
@@ -72,11 +72,12 @@ require_once 'config/db.php';
                     </div>
                     <div class="form-group">
                         <label for="photo">รูปถ่าย</label>
-                        <input type="file" id="photo" name="photo">
+                        <p>image/gif, image/jpeg, image/png</p>
+                        <input type="file" name="photo" accept="image/gif, image/jpeg, image/png">
                     </div>
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username">
+                        <input type="text" name="username">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
@@ -84,10 +85,10 @@ require_once 'config/db.php';
                     </div>
                     <div class="btn-con">
                         <div class="btn-submit">
-                            <button type="submit" name="signupstudent" >บันทึกข้อมูล</button>
+                            <button type="submit" name="signupstudent">บันทึกข้อมูล</button>
                         </div>
                         <div class="btn-out">
-                            <button  href='data-student.php'>ออก</button>
+                            <button href='data-student.php'>ออก</button>
                         </div>
                     </div>
                 </form>

@@ -7,7 +7,7 @@ if (isset($_POST['signupstudent'])) {
     $fullname = $_POST['fullname'];
     $phone = $_POST['phone'];
     $level = $_POST['level'];
-    // $photo = $_POST['photo'];
+    $photo = $_FILES['photo'];
     $username = $_POST['username'];
     $password = $_POST['password'];
     $urole = 'student';
@@ -26,6 +26,10 @@ if (isset($_POST['signupstudent'])) {
         exit();
     } else if (empty($level)) {
         $_SESSION['error'] = 'กรุณาเลือกกลุ่มวิชา';
+        header("location: add-student.php");
+        exit();
+    } else if (empty($photo['name'])) {
+        $_SESSION['error'] = 'กรุณาเพิ่มไฟล์รูป';
         header("location: add-student.php");
         exit();
     } else if (empty($username)) {
@@ -52,21 +56,45 @@ if (isset($_POST['signupstudent'])) {
                 header("location: add-teacher.php");
                 exit();
             } else {
-                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO student (s_code, fullname, phone, level, username, password, urole)
-                                        VALUES(:s_code, :fullname, :phone, :level, :username, :password, :urole)");
-                $stmt->bindParam(":s_code", $s_code);
-                $stmt->bindParam(":fullname", $fullname);
-                $stmt->bindParam(":phone", $phone);
-                $stmt->bindParam(":level", $level);
-                // $stmt->bindParam(":photo", $photo);
-                $stmt->bindParam(":username", $username);
-                $stmt->bindParam(":password", $passwordHash);
-                $stmt->bindParam(":urole", $urole);
-                $stmt->execute();
-                $_SESSION['success'] = 'สมัครเรียบร้อยแล้ว';
-                header("location: add-student.php");
-                exit();
+                $allow = array('jpg', 'jpeg', 'png');
+                $extention = explode(".", $photo['name']);
+                $fileActExt = strtolower(end($extention));
+                $fileNew = rand() . "." . $fileActExt;
+                $filePath = "uploads_student/" . $fileNew;
+
+                if (in_array($fileActExt, $allow)) {
+                    if ($photo['size'] > 0 && $photo['error'] == 0) {
+                        if (move_uploaded_file($photo['tmp_name'], $filePath)) {
+                            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+                            $stmt = $pdo->prepare("INSERT INTO student (s_code, fullname, phone, level, photo, username, password, urole)
+                                                    VALUES(:s_code, :fullname, :phone, :level, :photo, :username, :password, :urole)");
+                            $stmt->bindParam(":s_code", $s_code);
+                            $stmt->bindParam(":fullname", $fullname);
+                            $stmt->bindParam(":phone", $phone);
+                            $stmt->bindParam(":level", $level);
+                            $stmt->bindParam(":photo", $fileNew);
+                            $stmt->bindParam(":username", $username);
+                            $stmt->bindParam(":password", $passwordHash);
+                            $stmt->bindParam(":urole", $urole);
+                            $stmt->execute();
+                            $_SESSION['success'] = 'สมัครเรียบร้อยแล้ว';
+                            header("location: add-student.php");
+                            exit();
+                        } else {
+                            $_SESSION['error'] = 'การอัพโหลดรูปภาพล้มเหลว';
+                            header("location: add-teacher.php");
+                            exit();
+                        }
+                    } else {
+                        $_SESSION['error'] = 'ไฟล์รูปภาพไม่ถูกต้อง';
+                        header("location: add-teacher.php");
+                        exit();
+                    }
+                } else {
+                    $_SESSION['error'] = 'ประเภทไฟล์รูปภาพไม่ถูกต้อง';
+                    header("location: add-teacher.php");
+                    exit();
+                }
             }
         } catch (PDOException $e) {
             echo $e->getMessage();
